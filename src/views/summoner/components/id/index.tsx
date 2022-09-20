@@ -9,11 +9,9 @@ import { addComma } from "../../../../utils/text";
 const section = css`
   border-bottom: 1px solid #d8d8d8;
 `;
-
 const idInner = css`
   padding: 15px 0px 14px 24px;
 `;
-
 const previousTiers = css`
   ul {
     display: flex;
@@ -41,7 +39,6 @@ const previousTiers = css`
 const idDescription = css`
   display: flex;
 `;
-
 const profile = css`
   position: relative;
   width: 120px;
@@ -87,7 +84,6 @@ const profileBorder = css`
   height: 100%;
   z-index: 1;
 `;
-
 const description = css`
   flex: 1;
   padding-left: 17px;

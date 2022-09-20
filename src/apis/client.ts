@@ -33,11 +33,18 @@ const getMostInfo = async (summonerName: string) => {
   return response.data;
 };
 
+const getItemInfo = async () => {
+  const callUri = _URIS.GET_ITEMINFO;
+  const response = await apiClient.get<any>(callUri);
+  return response.data;
+};
+
 const apis = {
   getSummoner,
   getMatchDetail,
   getMatches,
   getMostInfo,
+  getItemInfo
 };
 
 export default apis;

@@ -1,6 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { useState } from "react";
+import kdaColor from "../../../../../assets/kdaStyle";
+import rateColor from "../../../../../assets/rateStyle";
 import {
   ChampionType,
   MostInfoType,
@@ -12,7 +14,6 @@ const article = css`
   border: solid 1px #cdd2d2;
   box-sizing: border-box;
 `;
-
 const tabs = css`
   display: flex;
   button {
@@ -49,7 +50,6 @@ const tabBtn = (selected: boolean) => css`
       border-bottom: 1px solid #cdd2d2;
     `}
 `;
-
 const championItem = css`
   display: flex;
   align-items: center;
@@ -177,7 +177,9 @@ function MostInfo({ data }: { data: MostInfoType | undefined }) {
       {type === "champion" ? (
         <div>
           <ul>
-            {data?.champions.map((champion: ChampionType, i: number) => {
+            {data?.champions.sort((a: ChampionType, b: ChampionType) => {
+              return b.games - a.games
+            }).map((champion: ChampionType, i: number) => {
 
               const kda = (
                 (champion.kills + champion.assists) /
@@ -190,7 +192,7 @@ function MostInfo({ data }: { data: MostInfoType | undefined }) {
               ).toFixed(0);
 
               return (
-                <li css={championItem} key={`champion${i}`}>
+                <li css={championItem} key={`champion_${i}`}>
                   <div css={thumbnail}>
                     <img src={champion.imageUrl} alt="champion" />
                   </div>
@@ -202,15 +204,15 @@ function MostInfo({ data }: { data: MostInfoType | undefined }) {
                   </div>
                   <div css={flexStyle}>
                     <div>
-                      <strong>{kda} 평점</strong>
+                      <strong css={kdaColor(kda)}>{kda} 평점</strong>
                     </div>
                     <div>
-                    <small>{champion.kills}/{champion.deaths}/{champion.assists}</small>
+                      <small>{champion.kills}/{champion.deaths}/{champion.assists}</small>
                     </div>
                   </div>
                   <div css={flexStyle}>
                     <div>
-                      <strong>{rate}%</strong>
+                      <strong css={rateColor(rate)}>{rate}%</strong>
                     </div>
                     <div><small>{champion.games}게임</small></div>
                   </div>
@@ -222,7 +224,26 @@ function MostInfo({ data }: { data: MostInfoType | undefined }) {
       ) : (
         <div>
           <ul>
-            {data?.recentWinRate.map((item: RecentWinRateType, i: number) => {
+            {data?.recentWinRate.sort((a: RecentWinRateType, b: RecentWinRateType) => {
+
+              const getRate = function (wins: number, losses: number) {
+                const rate = (
+                  (wins / (wins + losses)) * 100
+                ).toFixed(0);
+                return rate
+              }
+              const brate = getRate(b.wins, b.losses);
+              const arate = getRate(a.wins, a.losses);
+
+              if (brate < arate) {
+                return -1;
+              }
+              if (arate < brate) {
+                return 1;
+              }
+              return 0;
+              
+            }).map((item: RecentWinRateType, i: number) => {
 
               const rate = (
                 (item.wins / (item.wins + item.losses)) *
@@ -238,15 +259,15 @@ function MostInfo({ data }: { data: MostInfoType | undefined }) {
                     <strong>{item.name}</strong>
                   </div>
                   <div css={flexStyle}>
-                    <small>{rate}%</small>
+                    <small css={rateColor(rate)}>{rate}%</small>
                   </div>
                   <div css={chartStyle}>
                     <div css={barStyle}>
                       <div css={winStyle(item.wins)}>
-                        { item.wins }승
+                        {item.wins}승
                       </div>
                       <div css={lossStyle(item.losses)}>
-                        { item.losses }패
+                        {item.losses}패
                       </div>
                     </div>
                   </div>

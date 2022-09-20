@@ -3,6 +3,7 @@ import { css } from "@emotion/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import SearchHistory from "./components/history";
 import Wrapper from "../wrapper";
 
 const headerInner = css`
@@ -10,7 +11,6 @@ const headerInner = css`
   height: 100%;
   width: 100%;
 `;
-
 const inputWrapper = css`
   position: absolute;
   right: 0;
@@ -22,7 +22,8 @@ const inputWrapper = css`
   padding: 0px 14px;
   border-radius: 2px;
   background-color: #fff;
-  > div {
+`;
+const inputInner = css`
     display: flex;
     height: 14px;
     width: 100%;
@@ -47,14 +48,13 @@ const inputWrapper = css`
           brightness(99%) contrast(96%);
       }
     }
-  }
 `;
 
 /*
     전적 뷰
 */
 function Header() {
-  const navigate = useNavigate();
+  const navigate = useNavigate();  
 
   const [ inputValue, setInputValue ] = useState<string>("");
 
@@ -67,6 +67,7 @@ function Header() {
     }
   }
   function handleClick() {
+    setInputValue("");
     navigate(`/summoner/${inputValue}`);
   }
 
@@ -75,7 +76,7 @@ function Header() {
       <Wrapper>
         <div css={headerInner}>
           <div css={inputWrapper}>
-            <div>
+            <div css={inputInner}>
               <input
                 type="text"
                 placeholder="소환사명,챔피언···"                
@@ -87,6 +88,10 @@ function Header() {
                 <img src="/imgs/icon-gg.svg" alt="icon" />
               </button>
             </div>
+            {
+              inputValue.length > 0 &&
+              <SearchHistory/>
+            }            
           </div>
         </div>
       </Wrapper>

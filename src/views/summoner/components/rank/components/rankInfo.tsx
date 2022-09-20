@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
+import rateColor from "../../../../../assets/rateStyle";
 import { LeagueType } from "../../../../../types/summoner.types";
 import { addComma } from "../../../../../utils/text";
 
@@ -120,7 +121,7 @@ function RankInfo({ data, tierRank }: { data: LeagueType, tierRank: string }) {
             <p css={rankLp}>
               <strong>{data.tierRank.lp}LP</strong> / {data.wins}승 {data.losses}패
             </p>
-            <p css={rankRate}>승률{rate}%</p>
+            <p css={css`${rankRate} ${rateColor(rate)}` }>승률 {rate}%</p>
           </div>
         </>
         :

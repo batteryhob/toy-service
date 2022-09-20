@@ -1,5 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
+import kdaColor from "../../../../../assets/kdaStyle";
+import rateColor from "../../../../../assets/rateStyle";
+import useKDA from "../../../../../hooks/useKDA";
 import { ChampionType } from "../../../../../types/match.types";
 
 const championWrapper = css`
@@ -50,9 +53,7 @@ const winRateStyle = css`
 */
 function SummaryChamp({ champion }: { champion: ChampionType }) {
 
-  const kda = (
-    (champion.kills + champion.assists) / champion.deaths
-  ).toFixed(2);
+  const kda = useKDA({ kills: champion.kills, assists: champion.assists, deaths: champion.deaths})
 
   const rate = (
     (champion.wins / (champion.wins + champion.losses)) *
@@ -68,9 +69,9 @@ function SummaryChamp({ champion }: { champion: ChampionType }) {
         <div css={description}>
           <div css={name}>{champion.name}</div>
           <div css={summary}>            
-            <span><strong>{rate}</strong>%</span>
+            <span css={rateColor(rate)}><strong>{rate}</strong>%</span>
             <span css={winRateStyle}> ({champion.wins}승 {champion.losses}패)</span>
-            <span><strong>{kda} 평점</strong></span>
+            <span css={kdaColor(kda)}><strong>{kda} 평점</strong></span>
           </div>
         </div>
       </div>

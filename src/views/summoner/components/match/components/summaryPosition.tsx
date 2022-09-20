@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
+import rateColor from "../../../../../assets/rateStyle";
 import { PositionType } from "../../../../../types/match.types";
 
 const positionWrapper = css`
@@ -78,7 +79,7 @@ function SummaryPosition({ position }: { position: PositionType }) {
             }
           </div>
           <div css={summary}>
-            <span>승률 <strong>{rate}</strong>%</span>
+            <span css={rateColor(rate)}>승률 <strong>{rate}</strong>%</span>
           </div>
         </div>
       </div>

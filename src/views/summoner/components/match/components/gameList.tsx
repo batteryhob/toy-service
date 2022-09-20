@@ -10,11 +10,17 @@ const article = css`
 /*
     전적
 */
-function GameList({ games }: { games: Array<GameType> | undefined }) {
+function GameList({ games, matchType }: { games: Array<GameType> | undefined, matchType : "total" | "solo" | "free" }) {
   return (
     <article css={article}>
       <ul>
-        {games?.map((game: GameType) => {
+        {games?.filter((game: GameType)=>{
+          if(matchType === "solo")
+            return game.gameType === "솔랭";
+          if(matchType === "free")
+            return game.gameType === "자유 5:5 랭크";
+          return game;
+        }).map((game: GameType) => {
           return <GameItem game={game} key={game.gameId} />;
         })}
       </ul>

@@ -74,7 +74,7 @@ function Match({ data }: { data: MatchType | undefined }) {
         positions={data?.positions}
         summary={data?.summary}
       />
-      <GameList games={data?.games} />
+      <GameList games={data?.games} matchType={matchType} />
     </section>
   );
 }

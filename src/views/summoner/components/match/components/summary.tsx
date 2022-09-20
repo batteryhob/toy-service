@@ -1,5 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
+import kdaColor from "../../../../../assets/kdaStyle";
+import rateColor from "../../../../../assets/rateStyle";
+import useKDA from "../../../../../hooks/useKDA";
 import {
   ChampionType,
   PositionType,
@@ -117,18 +120,15 @@ function Summary({
   summary: SummaryType | undefined;
 }) {
 
+  const kills = summary ? summary.kills : 0;
+  const deaths = summary ? summary.deaths : 0;
+  const assists = summary ? summary.assists : 0;
+  const kda = useKDA({ kills, assists, deaths})
 
   const wins = summary ? summary.wins : 0;
   const losses = summary ? summary.losses : 0;
   const games = wins + losses;
-
   const rate = ((wins / games) * 100).toFixed(0);
-  
-  const kills = summary ? summary.kills : 0;
-  const deaths = summary ? summary.deaths : 0;
-  const assists = summary ? summary.assists : 0;
-  const kda = ((kills + assists) / deaths).toFixed(2);
-
 
   return (
     <article css={article}>
@@ -143,29 +143,25 @@ function Summary({
             </div>
             <div css={desc}>
               <p css={kdaStyle}>{summary?.kills} / {summary?.deaths} / {summary?.assists}</p>
-              <p css={rateStyle}>{kda}:1 ({rate}%)</p>
+              <p css={rateStyle}>
+                <span css={kdaColor(kda)}><strong>{kda}:1</strong></span>
+                <span css={rateColor(rate)}> ({rate}%)</span>                
+              </p>
             </div>
           </div>
         </div>
         <div css={championWrapper}>
           <ul>
-            {champions?.map((champion: ChampionType, i: number) => {
-              if(i < 3)
-                return <SummaryChamp champion={champion} key={champion.id} />;
-              else
-                return <></>;
+            {champions?.slice(0, 3).map((champion: ChampionType, i: number) => {
+              return <SummaryChamp champion={champion} key={`winchamp_${i}`} />;
             })}
           </ul>
         </div>
         <div css={positionWrapper}>
           <p>선호 포지션 (랭크)</p>
           <ul>
-            {positions?.map((position: PositionType, i: number) => {
-              if(i < 2)
-                return <SummaryPosition position={position} key={`position_${i}`}/>;
-              else
-                return <></>;
-
+            {positions?.slice(0, 3).map((position: PositionType, i: number) => {
+              return <SummaryPosition position={position} key={`position_${i}`}/>;
             })}
           </ul>
         </div>

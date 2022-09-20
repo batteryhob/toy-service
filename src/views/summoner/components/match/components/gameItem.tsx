@@ -5,6 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import { GameType } from "../../../../../types/match.types";
 
 import apis from "../../../../../apis/client";
+import useDate from "../../../../../hooks/useDate";
+import useTime from "../../../../../hooks/useTime";
+import Item from "./item";
+import useKDA from "../../../../../hooks/useKDA";
+import kdaColor from "../../../../../assets/kdaStyle";
 
 const gameWrapper = (isWin: boolean) => css`
   margin-bottom: 8px;
@@ -33,13 +38,37 @@ const inner = css`
   flex-direction: row;
   align-items: center;
 `;
-const date = css`
+const date = (isWin: boolean) => css`
   width: 70px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  text-align: center;  
+  text-align: center;
+  div {
+    &:nth-of-type(1){
+      position: relative;
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 50%;
+        margin-left: -13.5px;
+        display: inline-block;
+        height: 1px;
+        width: 27px;
+        ${
+          isWin ?
+          `background-color: #94b9d6 !important;`
+          :
+          `background-color: #d0a6a5 !important;`
+        }
+      }
+    }
+    &:nth-of-type(2){
+      margin-top: 8px;
+    }
+  }
 `;
 const champ = css`
   width: 100px;
@@ -87,6 +116,23 @@ const kdaColumn = css`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  p{
+    &:nth-of-type(1){
+      font-size: 15px;
+      font-weight: bold;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: -0.58px;
+      color: #555e5e;
+      span {
+        color: #d0021b !important;
+      }
+    }
+    &:nth-of-type(3){
+      margin-top: 7px;
+    }
+  }
 `
 const levelColumn = css`
   flex: 1;
@@ -94,8 +140,12 @@ const levelColumn = css`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  p{
+    &:nth-of-type(3){
+      color: #d0021b;
+    }
+  }
 `
-
 const itemWrapper = css`  
   margin-left: 30px;
   width: 94px;
@@ -162,6 +212,39 @@ const detailName = css`
   letter-spacing: -0.42px;
   color: #555;
 `
+const winColor = (isWin: boolean) => css`
+${
+  isWin ?
+  `color: #94b9d6 !important;`
+  :
+  `color: #d0021b !important;`
+}
+`
+const badge = (first: boolean) => css`
+  padding: 3px 5px;
+  border-radius: 9px;
+  border: solid 1px #7f3590;
+  background-color: #8c51c5;
+  font-size: 10px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  letter-spacing: -0.38px;
+  color: #fff;
+  ${
+    first ?
+      `
+        margin-right: 3px;
+        border: solid 1px #7f3590;
+        background-color: #8c51c5;
+      `
+    :
+    `
+      border: solid 1px #bf3b36;
+      background-color: #ec4f48;
+    `
+  }
+`
 
 /*
     전적
@@ -174,18 +257,22 @@ function GameItem({ game }: { game: GameType }) {
       return apis.getMatchDetail(game.summonerName, game.gameId);
     }
   );
+  const readableDate = useDate(game.createDate);
+  const readableTime = useTime(Number(game.gameLength) | 0);
+
+  const kda = useKDA({ kills: game.stats.general.kill, assists: game.stats.general.assist, deaths: game.stats.general.death})
 
   return (
     <li css={gameWrapper(game.isWin)}>
       <div css={inner}>
-        <div css={date}>
+        <div css={date(game.isWin)}>
           <div>
             <p>{game.gameType}</p>
-            <p>{game.createDate}</p>
+            <p>{readableDate}</p>
           </div>
           <div>
-            <p><strong>{game.isWin ? `승리` : `패배`}</strong></p>
-            <p>{game.gameLength}</p>
+            <p><strong css={winColor(game.isWin)}>{game.isWin ? `승리` : `패배`}</strong></p>
+            <p>{readableTime}</p>
           </div>
         </div>
         <div css={champ}>
@@ -224,9 +311,16 @@ function GameItem({ game }: { game: GameType }) {
           </div>
         </div>
         <div css={kdaColumn}>
-           <p>{game.stats.general.kill}/{game.stats.general.death}/{game.stats.general.assist}</p>
-           <p><strong>{game.stats.general.kdaString}</strong> 평점</p>
-           <p><span>{game.stats.general.largestMultiKillString}</span><span>{game.stats.general.opScoreBadge}</span></p>
+           <p>{game.stats.general.kill} / <span>{game.stats.general.death}</span> / {game.stats.general.assist}</p>
+           <p css={kdaColor(kda)}><strong>{game.stats.general.kdaString}</strong> 평점</p>
+           <p>
+             {
+               game.stats.general.largestMultiKillString !== "" && <span css={badge(true)}>{game.stats.general.largestMultiKillString}</span>
+             }
+             {
+               game.stats.general.opScoreBadge !== "" && <span css={badge(false)}>{game.stats.general.opScoreBadge}</span>
+             }             
+            </p>
         </div>
         <div css={levelColumn}>
           <p>레벨 {game.champion.level}</p>
@@ -238,9 +332,7 @@ function GameItem({ game }: { game: GameType }) {
             {
               game.items.map((item: any, i: number)=>{
                 return (
-                  <li key={`item_${i}`}>
-                    <img src={item.imageUrl} alt="아이템" />
-                  </li>
+                  <Item imageUrl={item.imageUrl} key={`item_${i}`} />
                 )
               })
             }

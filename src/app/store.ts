@@ -1,7 +1,12 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 
+import historyReducer from '../feature/history.reducer';
+import itemInfoReducer from '../feature/itemInfo.reducer';
+
 export const store = configureStore({
   reducer: {
+    history: historyReducer,
+    itemInfo: itemInfoReducer
   },
 });
 
